@@ -1,31 +1,29 @@
+package api_lp;
+
 import io.restassured.response.ValidatableResponse;
 import jdk.jfr.Description;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 
-public class UserFields {
+public class AuthTests {
     private Endpoints endpoints = new Endpoints();
-private User user;
-String token;
+    private User user;
 
-
-@Test
+    @Test
     @Description("Успешный вход")
     public void login_success() {
         Creds creds = new Creds();
-        user = new User(creds.login, "Rd352sda462.");
+        user = new User(creds.login, creds.password);
         ValidatableResponse response = endpoints.login(user);
-    token = response.extract().jsonPath().getString("refreshToken");
         response.assertThat().statusCode(200).body("status", is(true));
-
     }
-
     @Test
-    public void getUserFields_success() {
-        ValidatableResponse response = endpoints.getUserFields(token);
-        response.assertThat().statusCode(200).body("status",is(true));
+    @Description("Неправильный пароль")
+    public void login_fail() {
+        Creds creds = new Creds();
+        user = new User(creds.login, "123456789");
+        ValidatableResponse response = endpoints.login(user);
+        response.assertThat().statusCode(401).body("status", is(true));
     }
 }
