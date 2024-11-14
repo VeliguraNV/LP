@@ -1,5 +1,8 @@
+package api_lp;
+
 import io.restassured.response.ValidatableResponse;
 import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,7 +13,7 @@ public class ResetPassTest {
 
 
 @Test
-@Description("Успешный сброс пароля с логином")
+@DisplayName("Успешный сброс пароля с логином")
 public void resetPassWithLogin_success() {
     Creds creds = new Creds();
     user = new User(creds.login); //инъекция зависимости creds
@@ -19,7 +22,7 @@ public void resetPassWithLogin_success() {
 }
 
 @Test
-@Description("Некорректный логин")
+@DisplayName("Некорректный логин при сбросе пароля")
 public void resetPass_fail(){
     user = new User("1");
     ValidatableResponse response = endpoints.resetPassword(user);
