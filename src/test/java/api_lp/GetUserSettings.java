@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.*;
 
 public class GetUserSettings {
 
-    private String token;
     private Endpoints endpoints;
 
     @BeforeEach
@@ -17,28 +16,22 @@ public class GetUserSettings {
         // Устанавливаем базовый объект Endpoints
         endpoints = new Endpoints();
     }
-    public void login_success() {
-        Creds creds = new Creds();
-        User user = new User(creds.login, creds.password);
-        ValidatableResponse response = endpoints.login(user);
-        token = response.extract().jsonPath().getString("result.accessToken");
-        response.assertThat().statusCode(200).body("status", is(true));
-    }
+
     @Test
     @DisplayName("Успешное получение настроек пользователя")
     public void getUserSettingsWithAuth_test() {
-        login_success();
         Creds creds = new Creds();
-        User user = new User(creds.login, creds.password);
-        ValidatableResponse response = endpoints.getUserSettings(token);
-        token = response.extract().jsonPath().getString("result.accessToken");
-        response.assertThat().statusCode(200).body("status", is(true));
+        creds.login_success();
+        ValidatableResponse response = endpoints.getUserSettings(creds.getToken());
+          response.assertThat().statusCode(200).body("status", is(true));
     }
+
     @Test
     @DisplayName("Неудачное получение настроек пользователя без авторизации")
     public void getUserSettingsWithoutAuth_test() {
-               ValidatableResponse response = endpoints.getUserSettings(token);
-        response.assertThat().statusCode(401).body("status", is(false)).and().body("errors.message",contains(equalToIgnoringCase("Unauthorized")));
+        Creds creds = new Creds();
+        ValidatableResponse response = endpoints.getUserSettings(creds.getToken());
+        response.assertThat().statusCode(401).body("status", is(false)).and().body("errors.message", contains(equalToIgnoringCase("Unauthorized")));
     }
 }
 

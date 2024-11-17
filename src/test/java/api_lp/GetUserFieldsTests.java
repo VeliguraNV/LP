@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 
 public class GetUserFieldsTests {
-    private String token;
     private Endpoints endpoints;
 
     @BeforeEach
@@ -17,29 +16,21 @@ public class GetUserFieldsTests {
         endpoints = new Endpoints();
     }
 
-
-    public void login_success() {
+    @Test
+    @DisplayName("Успешный логин и получение полей пользователя ЛК")
+    public void getUserFields_success() {
         Creds creds = new Creds();
-    User user = new User(creds.login, creds.password);
-        ValidatableResponse response = endpoints.login(user);
-        token = response.extract().jsonPath().getString("result.accessToken");
-        response.assertThat().statusCode(200).body("status", is(true));
+        creds.login_success();
+        User user = new User(creds.login, creds.getPassword());
+        ValidatableResponse response = endpoints.getUserFields(creds.getToken());
+        response.assertThat().statusCode(200).body("status", is(true)).body("result.login.value", equalToIgnoringCase(creds.login));
     }
 
     @Test
-@DisplayName("Успешный логин и получение полей пользователя ЛК")
-    public void getUserFields_success() {
-        login_success();
-        Creds creds = new Creds();
-        User user = new User(creds.login, creds.getPassword());
-             ValidatableResponse response = endpoints.getUserFields(token);
-          response.assertThat().statusCode(200).body("status",is(true)).body("result.login.value", equalToIgnoringCase(creds.login));
-            }
-
-            @Test
     @DisplayName("Получение полей без авторизации")
-            public void getUserFieldsWithouthAuth_fail() {
-                ValidatableResponse response = endpoints.getUserFields(token);
-                response.assertThat().statusCode(401).body("status",is(false));
-            }
+    public void getUserFieldsWithoutAuth_fail() {
+        Creds creds = new Creds();
+        ValidatableResponse response = endpoints.getUserFields(creds.getToken());
+        response.assertThat().statusCode(401).body("status", is(false)).and().body("errors.message", contains(equalToIgnoringCase("Unauthorized")));
+    }
 }
