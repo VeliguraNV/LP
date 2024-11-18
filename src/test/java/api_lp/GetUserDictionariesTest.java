@@ -22,7 +22,12 @@ public class GetUserDictionariesTest {
         Creds creds = new Creds();
         creds.login_success();
         ValidatableResponse response = endpoints.getUserDictionaries(creds.getToken());
-        response.assertThat().statusCode(200).body("status", is(true));
+        response.assertThat().statusCode(200)
+                .body("status", is(true))
+                .body("result.cities", is(notNullValue()))
+                .body("result.roles", is(notNullValue()))
+                .body("result.departments", is(notNullValue()))
+                .body("result.attributes", is(notNullValue()));
     }
     @Test
     @DisplayName("Получение справочников для ЛК пользователя без авторизации")
