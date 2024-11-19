@@ -33,7 +33,7 @@ Creds creds = new Creds();
 creds.login_success();
 ValidatableResponse response = endpoints.editUserFail(creds.getToken()); // Вызываем метод изменения данных пользователя с некорректными данными
 response.assertThat().statusCode(400).body("status", is(false));
-    } // Почему то возвращает 200
+    }
     @Test
     @DisplayName("Успешное изменение данных пользователя")
     public void editUserWithoutAuth_fail() {
