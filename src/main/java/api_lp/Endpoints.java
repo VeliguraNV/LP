@@ -3,7 +3,6 @@ package api_lp;
 import io.restassured.response.ValidatableResponse;
 
 
-
 import static io.restassured.RestAssured.given;
 
 public class Endpoints {
@@ -107,6 +106,7 @@ public class Endpoints {
                 .get("/notifications")
                 .then().log().all();
     }
+
     public ValidatableResponse createAppeal(String token) {
         return given()
                 .log().all()
@@ -130,6 +130,7 @@ public class Endpoints {
                 .post("/support/appeal")
                 .then().log().all();
     }
+
     public ValidatableResponse createAppealFail(String token) {
         return given()
                 .log().all()
@@ -156,6 +157,7 @@ public class Endpoints {
                 .post("/support/appeal")
                 .then().log().all();
     }
+
     public ValidatableResponse getFaq(String token) {
         return given()
                 .log().all()
@@ -164,14 +166,42 @@ public class Endpoints {
                 .get("/support/faq")
                 .then().log().all();
     }
+
     public ValidatableResponse getSupportAppeals(String token) {
         return given()
                 .log().all()
                 .baseUri(BASE_URL)
-                 .formParam("limit", 5)
+                .formParam("limit", 5)
                 .formParam("offset", 0)
                 .header("Authorization", "Bearer " + token)
                 .get("/support/appeals")
+                .then().log().all();
+    }
+
+    public ValidatableResponse newMasssgeAppeal(String token, int idAppeal) {
+        return given()
+                .log().all()
+                .baseUri(BASE_URL)
+                .pathParam("appealId", idAppeal)
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body("{\n" +
+                        "  \"message\": \"Тест\",\n" +
+                        "  \"attachments\": [\n" +
+                        "    \n" +
+                        "  ]\n" +
+                        "}")
+                .post("/support/appeal/{appealId}/chat")
+                .then().log().all();
+    }
+
+    public ValidatableResponse getMassagesAppeal(String token, int idAppeal) {
+        return given()
+                .log().all()
+                .baseUri(BASE_URL)
+                .pathParam("appealId", idAppeal)
+                .header("Authorization", "Bearer " + token)
+                .get("/support/appeal/{appealId}/chat")
                 .then().log().all();
     }
 

@@ -41,17 +41,17 @@ public class SupportTests {
         response.assertThat().statusCode(401).body("status", is(false)).and().body("errors.message", contains(equalToIgnoringCase("Unauthorized")));
     }
 
-    @Test
-    @DisplayName("Создание обращения и запрос списка обращений")
-    public void createAppealTest() {
-        Creds creds = new Creds();
-        creds.login_success();
-        ValidatableResponse response = endpoints.createAppeal(creds.getToken());
-        response.assertThat().statusCode(200);
-        idAppeal = response.extract().jsonPath().getString("result.id");
-        ValidatableResponse response1 = endpoints.getSupportAppeals(creds.getToken());
-        response1.assertThat().statusCode(200).body("result[0].id", equalTo(Integer.parseInt(idAppeal)));
-    }
+//    @Test
+//    @DisplayName("Создание обращения и запрос списка обращений")
+//    public void createAppealTest() {
+//        Creds creds = new Creds();
+//        creds.login_success();
+//        ValidatableResponse response = endpoints.createAppeal(creds.getToken());
+//        response.assertThat().statusCode(200);
+//        idAppeal = response.extract().jsonPath().getString("result.id");
+//        ValidatableResponse response1 = endpoints.getSupportAppeals(creds.getToken());
+//        response1.assertThat().statusCode(200).body("result[0].id", equalTo(Integer.parseInt(idAppeal)));
+//    }
 
     @Test
     @DisplayName("Создание обращения без авторизации")
@@ -75,5 +75,30 @@ public class SupportTests {
         ValidatableResponse response = endpoints.createAppealFail(creds.getToken());
         response.assertThat().statusCode(400).body("status", is(false));
     }
+
+    @Test
+    @DisplayName("Успешная отправка и получение сообщения в обращении")
+    public void createChatAppealTest() {
+        Creds creds = new Creds();
+        creds.login_success();
+        ValidatableResponse response = endpoints.createAppeal(creds.getToken());//создаем обращение
+        response.assertThat().statusCode(200).body("status",is(true));
+        idAppeal = response.extract().jsonPath().getString("result.id");
+        ValidatableResponse response1 = endpoints.getSupportAppeals(creds.getToken()); // получаем список обращений
+        response1.assertThat().statusCode(200).body("status",is(true)).body("result[0].id", equalTo(Integer.parseInt(idAppeal)));
+        ValidatableResponse response3 = endpoints.newMasssgeAppeal(creds.getToken(), Integer.parseInt(idAppeal)); //добавляем новое сообщение в обращение
+        response3.assertThat().statusCode(200).body("status",is(true)).body("result.id", equalTo(Integer.parseInt(getIdAppeal())));
+ValidatableResponse response4 = endpoints.getMassagesAppeal(creds.getToken(),Integer.parseInt(idAppeal)); //полчение списка сообщений в обращении
+response4.assertThat().statusCode(200).body("status",is(true)).body("result.messages.text", hasItem("Тест"));
+    }
+    @Test
+    @DisplayName("Отправка сообщения, получение списка обращений без авторизации")
+    public void createChatAppealFailTest() {
+        ValidatableResponse response = endpoints.createAppeal(creds.getToken());//создаем обращение
+        response.assertThat().statusCode(401).body("status",is(false));
+        idAppeal = response.extract().jsonPath().getString("result.id");
+        ValidatableResponse response1 = endpoints.getSupportAppeals(creds.getToken());
+        response1.assertThat().statusCode(401).body("status",is(false));
+           }
 }
 
