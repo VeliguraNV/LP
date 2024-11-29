@@ -10,7 +10,7 @@ public class Creds {
     String login = "Avtotest2";
      @Getter
      String password = "92%ax8T78}";
-     @Getter
+        @Getter
      String token;
     public ValidatableResponse login_success() {
         Endpoints endpoints = new Endpoints();

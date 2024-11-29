@@ -4,7 +4,7 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class GetResetPassTest {
     private Endpoints endpoints = new Endpoints();
@@ -31,8 +31,8 @@ public class GetResetPassTest {
     @Test
     @DisplayName("Неудачное подтверждение проверочного кода и сброс пароля")
     public void confirmPassTest() {
-        ValidatableResponse response = endpoints.confirmPasswordReset();
-        response.assertThat().statusCode(400).body("status", is(false));
+        ValidatableResponse response = endpoints.confirmPasswordResetFail();
+        response.assertThat().statusCode(400).body("status", is(false)).and().body("errors.message",contains(equalToIgnoringCase("Указан неверный секретный ключ для сброса пароля")));
         //не работает ручка?
     }
 
