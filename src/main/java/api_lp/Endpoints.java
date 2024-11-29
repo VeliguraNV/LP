@@ -7,7 +7,7 @@ import static io.restassured.RestAssured.given;
 
 public class Endpoints {
     public static final String BASE_URL = "https://stage3.lifepoint.club/api/v1/";
-
+    //public static final String BASE_URL = "https://reactprod.lifepoint.club/api/v1/";
 
     public ValidatableResponse login(User user) {
         return given()
@@ -31,13 +31,13 @@ public class Endpoints {
                 .log().all();
     }
 
-    public ValidatableResponse confirmPasswordReset() {
+    public ValidatableResponse confirmPasswordResetFail() {
         return given()
                 .log().all()
                 .baseUri(BASE_URL)
                 .header("Content-type", "application/json")
                 .body("{\n \"login\" : \"Avtotest2\", \n\"password\": \"testPass_123\", \n\"verifCode\": \"731118\" \n}")
-                .post("/auth/password")
+                .put("/auth/password")
                 .then().log().all();
     }
 
